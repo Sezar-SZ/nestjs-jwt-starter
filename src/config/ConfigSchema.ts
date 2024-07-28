@@ -3,6 +3,7 @@ import { z } from "zod";
 enum NodeEnv {
     production = "production",
     development = "development",
+    test = "test",
 }
 
 const ConfigSchema = z.object({

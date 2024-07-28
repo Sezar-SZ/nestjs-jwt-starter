@@ -12,8 +12,8 @@ import { LoginDto } from "./dto";
 import { CreateUserDto } from "src/users/dto";
 import { ConfigService } from "@nestjs/config";
 import { Role } from "@prisma/client";
-import { refreshExpireDate } from "src/utils";
-import { RedisService } from "src/redis/redis.service";
+import { refreshExpireDate } from "../utils";
+import { RedisService } from "../redis/redis.service";
 
 @Injectable()
 export class AuthService {
