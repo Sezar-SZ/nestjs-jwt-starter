@@ -8,6 +8,9 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { AuthModule } from "./auth/auth.module";
 import { RedisModule } from "./redis/redis.module";
 import Config from "./config/ConfigSchema";
+import { APP_PIPE } from "@nestjs/core";
+
+import { ZodValidationPipe } from "@wahyubucil/nestjs-zod-openapi";
 
 @Module({
     imports: [
@@ -21,6 +24,13 @@ import Config from "./config/ConfigSchema";
         RedisModule,
     ],
     controllers: [AppController],
-    providers: [AppService, PrismaService],
+    providers: [
+        AppService,
+        PrismaService,
+        {
+            provide: APP_PIPE,
+            useClass: ZodValidationPipe,
+        },
+    ],
 })
 export class AppModule {}

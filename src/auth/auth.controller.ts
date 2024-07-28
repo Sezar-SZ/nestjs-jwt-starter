@@ -4,7 +4,6 @@ import {
     Post,
     HttpCode,
     HttpStatus,
-    UsePipes,
     UseGuards,
     Get,
     Delete,
@@ -13,21 +12,21 @@ import {
 } from "@nestjs/common";
 import { Response } from "express";
 import { AuthService } from "./auth.service";
-import { ZodValidationPipe } from "src/validators/zod.validator";
-import { LoginDto, loginSchema } from "./dto";
+import { LoginDto, RegisterDto } from "./dto";
 import { Role } from "@prisma/client";
 import { Roles } from "./decorators/roles.decorator";
 import { RolesGuard } from "./guards/roles.guard";
-import { CreateUserDto, createUserSchema } from "src/users/dto";
 import { AccessTokenGuard } from "./guards/accessToken.guard";
 
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
     constructor(private authService: AuthService) {}
 
     @HttpCode(HttpStatus.OK)
     @Post("login")
-    @UsePipes(new ZodValidationPipe(loginSchema))
     async login(
         @Body() loginDto: LoginDto,
         @Res({ passthrough: true }) response: Response
@@ -36,9 +35,8 @@ export class AuthController {
     }
 
     @Post("signup")
-    @UsePipes(new ZodValidationPipe(createUserSchema))
     signup(
-        @Body() createUserDto: CreateUserDto,
+        @Body() createUserDto: RegisterDto,
         @Res({ passthrough: true }) response: Response
     ) {
         return this.authService.signUp(createUserDto, response);
@@ -59,6 +57,7 @@ export class AuthController {
     }
 
     @UseGuards(AccessTokenGuard)
+    @ApiBearerAuth()
     @Get()
     async getProfile(@Req() req) {
         console.log(req.user);
@@ -67,6 +66,7 @@ export class AuthController {
 
     @Roles(Role.ADMIN)
     @UseGuards(AccessTokenGuard, RolesGuard)
+    @ApiBearerAuth()
     @Delete()
     delete() {
         return { message: "protected route, only for user with admin role!" };
